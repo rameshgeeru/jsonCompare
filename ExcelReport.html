@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Excel Table Demo</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+	<style>
+		table, th, td {
+			border: 1px solid black;
+			border-collapse: collapse;
+			padding: 5px;
+		}
+	</style>
+</head>
+<body>
+	<h1>Excel Table Demo</h1>
+	<div>
+		<label for="fileInput">Select an Excel file:</label>
+		<input type="file" id="fileInput" accept=".xlsx">
+		<button onclick="readExcel()">Read Excel</button>
+	</div>
+	<div id="tableContainer"></div>
+	<script>
+		function readExcel() {
+			const fileInput = document.getElementById('fileInput');
+			const file = fileInput.files[0];
+			const reader = new FileReader();
+			reader.onload = function(event) {
+				const data = event.target.result;
+				const workbook = XLSX.read(data, { type: 'binary' });
+				const sheetName = workbook.SheetNames[0];
+				const worksheet = workbook.Sheets[sheetName];
+				const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+				const tableHtml = generateTableHtml(json);
+				document.getElementById('tableContainer').innerHTML = tableHtml;
+			};
+			reader.readAsBinaryString(file);
+		}
+
+		function generateTableHtml(data) {
+			let tableHtml = '<table>';
+			for (let row of data) {
+				tableHtml += '<tr>';
+				for (let cell of row) {
+					tableHtml += '<td>' + cell + '</td>';
+				}
+				tableHtml += '</tr>';
+			}
+			tableHtml += '</table>';
+			return tableHtml;
+		}
+	</script>
+</body>
+</html>

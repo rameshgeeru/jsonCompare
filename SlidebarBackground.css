@@ -1,0 +1,53 @@
+.button-container {
+    display:block;
+    background-color:lightblue;
+    border: 1px solid blue;
+    border-radius: 5px;
+    width: 250px;
+    height:650px;
+    padding-left: 0px;
+  }
+  
+  
+  .button-container button {
+    display: block;
+    margin-bottom: 5px;
+    padding: 5px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    padding-left: 0px;
+  }
+  
+  .button-container button:hover {
+    background-color: #e6e6e6;
+  }
+  #transactions {
+    font-size: 24px;
+    animation: slideAnimation 2s;
+}
+
+@keyframes pulseAnimation {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes slideAnimation {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100);
+    }
+    /* 100% {
+        transform: translateX(-100%);
+    } */
+}
+  

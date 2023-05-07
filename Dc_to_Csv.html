@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Upload and Display Text File</title>
+    <link href="Browse.css" rel="stylesheet">
+    <link href="SlidebarBackground.css" rel="stylesheet">
+    <link href="SlidingOption.css" rel="stylesheet">
+    <link href="SlidingOptionMain.css" rel="stylesheet">
+    <link href="header.css" rel="stylesheet">
+
+
+</head>
+<header>
+    <nav class="default-nav">
+      <a>
+        <figure>
+          <img src="https://upload.wikimedia.org/wikipedia/commons/b/bf/Reliance_Jio_Logo.svg" 
+        4alt="" width="70" height="40">
+          
+        </figure>
+      </a>
+      <ul>
+        
+        <li>Admin</li>
+        <li>Home</li>
+      </ul>
+    </nav>
+  </header>
+<body>
+
+    <div id="transactions"  class="button-container">
+
+        <ul  class="file-upload">
+            <li style="margin-bottom: 10px;">
+                <div>
+                    <input type="file" id="file" name="file" accept=".csv">
+                    <button type="button">Choose</button>
+                    <button id="file" name="file" onclick="handleFileSelect()">Upload and Display</button>
+                   
+                </div>
+            </li>
+            
+
+            <li style="margin-bottom: 10px;">
+                <div>
+                    <label for="new-data">Enter new data to append:</label>
+                    <input type="text" id="new-data" name="new-data">
+                </div>
+            </li >
+            <div>
+                <button onclick="handleAppend()">Append Data</button>
+            </div>
+            
+            <button onclick="downloadCSV()">Download CSV</button>
+           
+            
+        </ul>
+
+
+    </div>
+
+    
+   <div  name="file" id="transactions1" class="container" >
+    <div >
+        <p> <h3> Result </h3></p>
+        <table id="csv-table"></table>
+    </div>
+
+    </div>
+
+
+
+    <script src="Browse.js"></script>
+    <script src="Dataappend.js"></script>
+
+
+</body>
+
+</html>

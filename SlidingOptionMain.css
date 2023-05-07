@@ -1,0 +1,58 @@
+#transactions1 {
+    margin-top: -52.3%;
+margin-left: 21%;
+    animation: slideAnimation 6s;
+}
+
+@keyframes pulseAnimation {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes slideAnimation {
+    0% {
+        transform: translateX(-120%);
+    }
+    100% {
+        transform: translateX(0%);
+    }
+    /* 100% {
+        transform: translateX(-100%);
+    } */
+}
+.container {
+    margin-left: 20%;
+    background-color: whitesmoke;
+    border: 1px solid blue;
+    border-radius: 5px;
+    width:960px;
+    height:650px;
+    padding: 10px;
+    /* backface-visibility: initial; */
+  }
+  #csv-table {
+    width: 19%;
+-webkit-text-stroke-width: 20;
+    border: 1px solid black;
+    table-layout:fixed;
+    
+}
+
+#csv-table td {
+    padding: 5px;
+    border: 1px solid black;
+    text-align: left;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+  
+  
+  

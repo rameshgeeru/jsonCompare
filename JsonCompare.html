@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title></title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="header.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="path/to/pretty-print-json.css">
+  <!-- <script type="text/javascript" src="path/to/pretty-print-json.js"></script> -->
+
+</head>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
+
+<style>
+  pre {
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  /* Style for the sidebar */
+  .sidebar {
+    position: fixed;
+    top: 132px;
+    left: -300px;
+    width: 200px;
+    height: 100%;
+    background-color: #004990;
+    border-radius: 5px;
+    border-style: groove;
+    padding: 20px;
+    transition: all 0.3s ease-in-out;
+    z-index: 1;
+  }
+
+
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .sidebar li {
+    margin-bottom: 20px;
+  }
+
+  /* Style for the toggle button */
+  .toggle-sidebar {
+    position: 25px;
+
+    top: 50px;
+    right: 860px;
+    z-index: 2;
+  }
+
+  /* Style to show the sidebar when the toggle button is clicked */
+  .show-sidebar .sidebar {
+    left: 0;
+  }
+
+  /* Style to hide the content when the sidebar is shown */
+  .show-sidebar main {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  /* Center file inputs */
+  .sidebar li:nth-child(1),
+  .sidebar li:nth-child(2) {
+    text-align: center;
+  }
+
+  .file-upload button {
+    background-color: darkblue;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 200px;
+  }
+</style>
+
+<header>
+  <nav class="default-nav">
+    <a>
+      <figure>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/b/bf/Reliance_Jio_Logo.svg" alt="" width="70"
+          height="40">
+      </figure>
+    </a>
+    <button style="position: absolute;
+    top: 43px;
+    right: 1121px;
+    z-index: 2;
+    padding-block: 15px;text-overflow: ellipsis;" class="toggle-sidebar">StartCompare!</button>
+  </nav>
+
+  <div class="sidebar">
+    <ul>
+      <li>
+        <label for="file1" type="button" >Choose File</label>
+        <input type="file" id="file1" style="display:none;">
+        <span id="file1-status"></span>
+        <br><br></li>
+      <li>
+        <label for="file2" class="button">Choose File</label>
+        <input type="file" id="file2" style="display:none;">
+        <span id="file1-status"></span><br><br></li>
+      <li>
+        <button type="button" onclick="compareJSON()">Compare Json</button>
+      </li>
+         </button>
+        <button id="download-btn">Download Report</button>
+     
+      <li>
+        <button>
+          <div id="transactions2" class="container1" onclick="window.location.href = 'ExcelReport.html';">Report</div>
+     
+      </li>
+    </ul>
+  </div>
+</header>
+
+<body>
+  <!-- <h2>Comparison</h2> -->
+  <!-- <pre id="comparison"></pre> -->
+  <div style="display: flex;">
+    <div style="flex-basis: 30%;margin-left: 300px;">
+      <h2>File 1</h2>
+      <pre id="json1"></pre>
+    </div>
+    <div style="flex-basis: 30%;">
+      <h2>File 2</h2>
+      <pre id="json2"></pre>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+</body>
+
+
+<script src="script.js"></script>
+<script>
+  // Add event listener to toggle button
+  const toggleBtn = document.querySelector('.toggle-sidebar');
+  toggleBtn.addEventListener('click', function () {
+    document.querySelector('header').classList.toggle('show-sidebar');
+  });
+</script>
+
+</html>

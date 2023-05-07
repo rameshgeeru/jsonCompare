@@ -1,0 +1,33 @@
+/*
+  Default background styling
+*/
+.default-nav {
+    display: block;
+    background-color: #004990;
+    overflow: hidden;
+    border-radius: 5px;
+    width: 100%;
+   
+  }
+  
+  .default-nav figure {
+    float: left;
+    display: block;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 25px;
+  }
+  
+  .default-nav ul li {
+    list-style-type: none;
+    float: right;
+    display: block;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 25px;
+    text-decoration: none;
+    font-size: 25px;
+  }
+  

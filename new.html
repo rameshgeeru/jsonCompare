@@ -1,0 +1,144 @@
+
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+    </head>
+    <script>
+        function compareObjects1(obj1, obj2) {
+  const allKeys = new Set([...Object.keys(obj1), ...Object.keys(obj2)]);
+  const differences = [];
+  for (const key of allKeys) {
+    const value1 = obj1[key];
+    const value2 = obj2[key];
+    if (value1 === undefined) {
+      differences.push({
+        key1: "",
+        key2: key,
+        value1: "",
+        value2: JSON.stringify(value2),
+        keyMatching:"KeyNotMatching",
+        valueMatching: "ValueNotMatching"
+      });
+    } else if (value2 === undefined) {
+      differences.push({
+        key1: key,
+        key2: "",
+        value1: JSON.stringify(value1),
+        value2: "",
+        keyMatching:"KeyNotMatching",
+        valueMatching: "ValueNotMatching"
+      });
+    } else if (typeof value1 === "object" && typeof value2 === "object") {
+      const childDifferences = compareObjects1(value1, value2);
+      if (childDifferences.length > 0) {
+        differences.push(...childDifferences);
+      } else {
+        differences.push({
+          key1: key,
+          key2: key,
+          value1: JSON.stringify(value1),
+          value2: JSON.stringify(value2),
+          keyMatching:"KeyMatching",
+          valueMatching: "ValueMatching"
+        });
+      }
+    } else if (value1 !== value2) {
+      differences.push({
+        key1: key,
+        key2: key,
+        value1: JSON.stringify(value1),
+        value2: JSON.stringify(value2),
+
+        keyMatching:"Matching",
+        valueMatching: "ValueNotMatching"
+
+      });
+    } else {
+      differences.push({
+        key1: key,
+        key2: key,
+        value1: JSON.stringify(value1),
+        value2: JSON.stringify(value2),
+        keyMatching:"Matching",
+        valueMatching: "ValueMatching"
+
+
+      });
+    }
+  }
+  return differences;
+}
+function compareJSON() {
+  // Get the contents of the first file
+  const file1 = document.getElementById('file1').files[0];
+  const reader1 = new FileReader();
+  reader1.readAsText(file1);
+  reader1.onload = function () {
+    const json1 = JSON.parse(reader1.result);
+    document.getElementById('json1').innerHTML = JSON.stringify(json1, null, 2);
+    // Get the contents of the second file
+    const file2 = document.getElementById('file2').files[0];
+    const reader2 = new FileReader();
+    reader2.readAsText(file2);
+    reader2.onload = function () {
+      const json2 = JSON.parse(reader2.result);
+      document.getElementById('json2').innerHTML = JSON.stringify(json2, null, 2);
+      // Compare the two JSON objects
+      const differences = compareObjects1(json1, json2);
+      // Store the differences in a variable
+      window.differences = differences;
+      // Display a message to indicate the comparison is complete
+      document.getElementById('comparison-status').innerHTML = 'Comparison complete. Click "Download Report" to generate the Excel report.';
+    }
+  }
+
+
+function downloadReport() {
+  // Generate the Excel report
+  const workbook = XLSX.utils.book_new();
+  // Create a worksheet for the differences
+  const worksheet = XLSX.utils.json_to_sheet(window.differences);
+  // Add headers to the worksheet
+  XLSX.utils.sheet_add_aoa(worksheet, [['Key 1', 'Key 2', 'Value1 ', 'Value2 ']]);
+  // Append the worksheet to the workbook
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Differences');
+  // Save the workbook as an Excel file
+  XLSX.writeFile(workbook, 'differences.xlsx');
+}}
+
+document.getElementById('compare-btn').addEventListener('click', compareJSON);
+document.getElementById('download-btn').addEventListener('click', downloadReport);
+
+    </script>
+    <body>
+        <div>
+            <label for="file1">Select File 1:</label>
+            <input type="file" id="file1" name="file1"><br><br>
+            <label for="file2">Select File 2:</label>
+            <input type="file" id="file2" name="file2"><br><br>
+            <button id="compare-btn">Compare Files</button>
+            <button id="download-btn">Download Report</button>
+          </div>
+          <div>
+            <h3>JSON 1:</h3>
+            <pre id="json1"></pre>
+          </div>
+          <div>
+            <h3>JSON 2:</h3>
+            <pre id="json2"></pre>
+          </div>
+          
+        
+        <script src="" async defer></script>
+    </body>
+</html>

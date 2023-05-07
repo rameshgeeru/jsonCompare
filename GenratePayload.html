@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Upload and Display Text File</title>
+    <link href="Browse.css" rel="stylesheet">
+    <link href="SlidebarBackground.css" rel="stylesheet">
+    <link href="SlidingOption.css" rel="stylesheet">
+    <link href="SlidingOptionMain.css" rel="stylesheet">
+    <link href="header.css" rel="stylesheet">
+
+</head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.1/papaparse.min.js"></script>
+<script>
+    // JSON data object
+    var jsonData = [];
+
+    // Function to convert CSV to JSON
+    function csvToJSON(csvData, delimiter) {
+        var parsedData = Papa.parse(csvData, {
+            delimiter: delimiter
+        });
+        var jsonData = JSON.stringify(parsedData.data, function (key, value) {
+            // Remove leading/trailing whitespaces from keys and values
+            if (typeof value === 'string') {
+                value = value.trim();
+            }
+            if (typeof key === 'string') {
+                key = key.trim();
+            }
+            return value;
+        }, 2);
+        // Modify the resulting JSON data to use key,value format
+        var jsonDict = JSON.parse(jsonData);
+        var result = {};
+
+        // Add "date" key with current date and time as value
+        result["date"] = getCurrentDateTime();
+
+        jsonDict.forEach(function (row) {
+            var key = row[0];
+            var value = row[1];
+            // Replace specific strings with random values
+            if (value === "String") {
+                value = generateRandomString(8);
+            } else if (value === "Number") {
+                value = generateRandomNumber();
+            } else if (value === "json") {
+                value = {
+                    "de1": generateRandomString(8) + generateRandomNumber(),
+                    "de2": generateRandomString(8) + generateRandomNumber(),
+                    "de4": generateRandomString(8) + generateRandomNumber()
+                };
+            }
+            result[key] = value;
+        });
+        return "[" + JSON.stringify(result, null, 2) + "]";
+    }
+
+    function generateRandomString(length) {
+        var length = length;
+        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+        var result = '';
+
+        for (var i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+
+        return result;
+    }
+
+    function generateRandomNumber() {
+        return Math.floor(Math.random() *
+            1000000); // Replace with desired range or logic for generating random string
+    }
+
+    // Function to handle file upload
+    function handleFileUpload(event) {
+        var file = event.target.files[0];
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            var csvData = e.target.result;
+            var jsonData = csvToJSON(csvData);
+            var jsonDict;
+            try {
+                jsonDict = JSON.parse(jsonData);
+                // Display the JSON data on screen
+                var jsonResult = JSON.stringify(jsonDict, null, 2);
+                document.getElementById('result').innerText = jsonResult;
+            } catch (error) {
+                console.error(error);
+            }
+            document.getElementById("download-link").href = "data:text/json;charset=utf-8," +
+                jsonResult;
+            document.getElementById("download-btn").style.display = "block";
+        }
+        reader.readAsText(file);
+    }
+
+    // Function to get current date and time
+    function getCurrentDateTime() {
+        var now = new Date();
+        var year = now.getFullYear();
+        var month = addLeadingZero(now.getMonth() + 1);
+        var day = addLeadingZero(now.getDate());
+        var hours = addLeadingZero(now.getHours());
+        var minutes = addLeadingZero(now.getMinutes());
+        var seconds = addLeadingZero(now.getSeconds());
+        var milliseconds = addLeadingZeros(now.getMilliseconds(), 3);
+        return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}.${milliseconds}`;
+    }
+
+    function addLeadingZero(number) {
+        if (number < 10) {
+            return '0' + number;
+        }
+        return number;
+    }
+
+    function addLeadingZeros(number, zeros) {
+        var paddedNumber = number.toString();
+        while (paddedNumber.length < zeros) {
+            paddedNumber = '0' + paddedNumber;
+        }
+        return paddedNumber;
+    }
+    // Function to update test key and value
+    function updateTestKeyValue() {
+        testKey = document.getElementById("testKey").value;
+        testValue = document.getElementById("testValue").value;
+        jsonData.unshift({
+            [testKey]: testValue
+        });
+        var jsonOutput = document.getElementById("jsonOutput");
+        jsonOutput.innerText = JSON.stringify(jsonData, null);
+        document.getElementById("currentTestKey").innerText = "Test Key: " + testKey;
+        document.getElementById("currentTestValue").innerText = "Test Value: " + testValue;
+    }
+
+    function csvFileToJSON(file) {
+        try {
+            var reader = new FileReader();
+            reader.readAsBinaryString(file);
+            reader.onload = function (e) {
+                var jsonData = [];
+                var headers = [];
+                var rows = e.target.result.split("\n");
+                console.log(rows)
+                for (var i = 0; i < rows.length - 1; i++) {
+                    var cells = rows[i].split(",")
+                    console.log(cells)
+
+                    var rowData = {};
+                    var headerName = cells[0].trim();
+
+                    if (!isNumeric(cells[1])) {
+                        console.log(cells[1])
+                        // cells[1].replace("'{","{")
+                        rowData[headerName] = cells[1];
+                        // rowData[headerName].replace("'{","{")
+                        console.log(rowData[headerName])
+
+                    }
+                    // else if(typeof(cells[1])=="object"){
+                    //     rowData[headerName] = cells[1];
+                    //     rowData[headerName].replace('/',"")
+                    //     console.log(cells[1]);
+                    // }
+                    else {
+                        rowData[headerName] = parseInt(cells[1]);
+                    }
+
+                    jsonData.push(rowData)
+
+                }
+                //skip the first row (header) data
+                //displaying the json result in string format
+                document.getElementById("display_csv_data").innerHTML = JSON.stringify(jsonData);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+    // Function to add more key-value pairs dynamically
+    function addKeyValuePair() {
+        var container = document.getElementById("keyValueContainer");
+        var numKeys = document.getElementById("numKeys").value;
+        numKeys = parseInt(numKeys) + 1;
+        document.getElementById("numKeys").value = numKeys;
+
+        var div = document.createElement("div");
+        div.innerHTML = `
+    <input type="text" id="key${numKeys}" placeholder="Enter key ${numKeys}">
+    <input type="text" id="value${numKeys}" placeholder="Enter value ${numKeys}">
+`;
+        container.appendChild(div);
+
+    }
+
+    function animateText() {
+        textElement.style.transform = 'translateX(1200px)'; /* Define the translation animation */
+    } // Get the text element
+    var textElement = document.getElementById('myText');
+
+    // Call the animation function after a delay
+    setTimeout(animateText, 1000);
+</script>
+<header>
+    <nav class="default-nav">
+        <a>
+            <figure>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/bf/Reliance_Jio_Logo.svg" 4alt="" width="70"
+                    height="40">
+
+            </figure>
+        </a>
+        <ul>
+
+            <li>Admin</li>
+            <li>Home</li>
+        </ul>
+    </nav>
+</header>
+
+<body>
+
+    <div id="transactions" class="button-container">
+
+
+        <div>
+            <aside>
+                <ul class="file-upload">
+                    <li style="margin-bottom: 10px;">
+                        <div>
+                            <input type="file" id="fileInput" name="file" accept=".csv">
+                            <button type="button">Choose</button>
+
+                            <input type="file" id="fileInput" onchange="handleFileUpload(event)">
+                        </div>
+                    </li>
+
+                    <div class="file-upload" style="margin-bottom: 10px;" id="download-btn">
+
+                        <button id="download-button" class="btn btn-primary">Download JSON</button>
+                        <div class="file-upload" style="margin-bottom: 10px;">
+                            <a id="download-link" download="result.json" href="#" class="btn btn-primary"></a>
+                        </div>
+                    </div>
+
+            </aside>
+        </div>
+
+
+    </div>
+
+
+    <div name="file" id="transactions1" class="container">
+        <h2 class="result">Result:</h2>
+        <div class="sidebar1">
+            <pre id="result"></pre>
+        </div>
+
+    </div>
+
+
+
+    <script src="Browse.js"></script>
+    <script src="Dataappend.js"></script>
+
+
+</body>
+<script>
+    const downloadButton = document.getElementById('download-button');
+    const downloadLink = document.getElementById('download-link');
+
+    downloadButton.addEventListener('click', () => {
+        downloadLink.click();
+    });
+    document.getElementById('csvForm').addEventListener('submit', function (e) {
+        e.preventDefault(); // prevent form submission
+
+        var csvFile = document.getElementById('csvFile').files[0]; // get selected file
+        var reader = new FileReader();
+
+        reader.onload = function (event) {
+            var csvData = event.target.result;
+            var csvTable = document.getElementById('csvTable');
+            var rows = csvData.split('\n');
+            var count_String = 0;
+            var count_Number = 0;
+            var count_json = 0;
+            var rows_count = rows.length; // count of word occurrences
+            console.log(rows.length)
+            for (var i = 0; i < rows.length - 1; i++) {
+                var row = rows[i].split(','); // split row into columns based on comma
+
+                // Access specific row and column data
+                var rowIndex = i; // row index (0-based)
+                var columnIndex = 1; // column index (0-based)
+                console.log(row[1]);
+                var cellValue = row[columnIndex].trim(); // get cell value and trim leading/trailing spaces
+
+                // Find and replace specific word in specific row and column
+                //String
+                var specificWord = 'String'; // word to search for
+                var replacement = 'String'; // replacement string
+
+                if (i === rowIndex) {
+                    // Count word occurrences and replace with replacement string
+                    var regex = new RegExp(specificWord, 'gi'); // use global and case-insensitive flag
+                    row[columnIndex] = row[columnIndex].replace(regex, function (match) {
+                        count_String++; // increment count for each match
+                        return replacement; // replace match with replacement string
+                    });
+                }
+                //Number
+                // Find and replace specific word in specific row and column
+                var specificWord = 'Number'; // word to search for
+                var replacement = 'Number'; // replacement string
+
+                if (i === rowIndex) {
+                    // Count word occurrences and replace with replacement string
+                    var regex = new RegExp(specificWord, 'gi'); // use global and case-insensitive flag
+                    row[columnIndex] = row[columnIndex].replace(regex, function (match) {
+                        count_Number++; // increment count for each match
+                        return replacement; // replace match with replacement string
+                    });
+                }
+                //Json
+                // Find and replace specific word in specific row and column
+                var specificWord = 'json'; // word to search for
+                var replacement = 'json'; // replacement string
+                var count = 0; // count of word occurrences
+                if (i === rowIndex) {
+                    // Count word occurrences and replace with replacement string
+                    var regex = new RegExp(specificWord, 'gi'); // use global and case-insensitive flag
+                    row[columnIndex] = row[columnIndex].replace(regex, function (match) {
+                        count_json++; // increment count for each match
+                        return replacement; // replace match with replacement string
+                    });
+                }
+
+
+                // Create a table row
+                var tr = document.createElement('tr');
+
+                for (var j = 0; j < row.length; j++) {
+                    // Create a table cell for each column
+                    var td = document.createElement('td');
+                    td.textContent = row[j].trim(); // trim leading/trailing spaces
+                    tr.appendChild(td);
+                }
+
+                csvTable.appendChild(tr); // append row to table
+
+
+            }
+
+            document.getElementById('countString').innerText = count_String;
+            console.log(count_String)
+            document.getElementById('countNumber').innerText = count_Number;
+            console.log(count_Number)
+            document.getElementById('countPayload').innerText = count_String;
+            console.log(count_Number)
+
+            // Enable download button
+            document.getElementById('downloadBtn').disabled = false;
+        };
+
+        reader.readAsText(csvFile); // read CSV file as text
+    });
+
+    document.getElementById('downloadBtn').addEventListener('click', function () {
+        var csvTable = document.getElementById('csvTable');
+        var csvContent = '';
+        for (var i = 0; i < csvTable.rows.length; i++) {
+            var rowData = [];
+            for (var j = 0; j < csvTable.rows[i].cells.length; j++) {
+                rowData.push(csvTable.rows[i].cells[j].textContent);
+            }
+            csvContent += rowData.join(',') + '\n';
+        }
+
+        var blob = new Blob([csvContent], {
+            type: 'text/csv'
+        });
+        var url = URL.createObjectURL(blob);
+        var downloadLink = document.createElement('a');
+        downloadLink.href = url;
+        downloadLink.download = 'replaced_data.csv';
+        downloadLink.click();
+    });
+</script>
+
+</html>
